@@ -1,0 +1,44 @@
+@media only screen and (min-width:1199px){
+   .factdivs {
+      margin-left: 5% !important;
+      margin-bottom: 50px !important;
+      min-height: 150px;
+    }
+}
+.navbar-inverse {
+    background-color: rgb(127, 184, 255);
+    color: white;
+    border-color: white;
+}
+.navbar-inverse .navbar-brand:focus, .navbar-inverse .navbar-brand:hover {
+    color: white;
+}
+.navbar-inverse .navbar-brand {
+    color: white;
+}
+.navbar-inverse .navbar-toggle {
+    border-color: white;
+}
+.btn-info{
+    background-color: rgb(127, 184, 255);
+    border-color: rgb(127, 184, 255);
+}
+h2 {
+    color: rgb(127, 184, 255);
+}
+.navbar-inverse .navbar-nav>li>a {
+    color: white;
+}
+.navbar-inverse .navbar-collapse, .navbar-inverse .navbar-form {
+    border-color: white;
+}
+.btn-primary {
+    background-color: rgb(127, 184, 255);
+    border-color: rgb(127, 184, 255);
+}
+a {
+    color: rgb(127, 184, 255);
+}
+.navbar-inverse .navbar-toggle:focus, .navbar-inverse .navbar-toggle:hover{
+    background-color: rgb(127, 184, 255);
+}
