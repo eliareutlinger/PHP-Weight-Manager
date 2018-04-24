@@ -2,10 +2,10 @@
 <html lang="en">
 
 <?php
- 
+
 	session_start();
 	session_regenerate_id();
- 
+
 	if (empty($_SESSION['login'])) {
 		header('Location: http://' . $_SERVER['HTTP_HOST'] . '/login.php');
 	} else {
@@ -14,18 +14,18 @@
 		';
 		$name = htmlspecialchars($_SESSION['user']['username']);
 		$users_id = htmlspecialchars($_SESSION['user']['userid']);
-		
+
 		date_default_timezone_set('Europe/Berlin');
-		$link = mysqli_connect("localhost", "root", "", "eliareut_weight") or die (mysqli_error ());
-		
+		include("database/connect.php");
+
 		$userlangselect = mysqli_fetch_array(mysqli_query($link, "SELECT user_lang FROM tbl_user WHERE id = '$users_id';"));
 		$language = $userlangselect['user_lang'];
-		
+
 		function redirect($url){
-			if (!headers_sent()){    
+			if (!headers_sent()){
 				header('Location: '.$url);
 				exit;
-			} else {  
+			} else {
 				echo '<script type="text/javascript">';
 				echo 'window.location.href="'.$url.'";';
 				echo '</script>';
@@ -34,12 +34,12 @@
 				echo '</noscript>'; exit;
 			}
 		}
-	
+
 	}
 ?>
 
 <head>
-    
+
     <link rel="apple-touch-icon" sizes="57x57" href="/allicons/apple-icon-57x57.png">
     <link rel="apple-touch-icon" sizes="60x60" href="/allicons/apple-icon-60x60.png">
     <link rel="apple-touch-icon" sizes="72x72" href="/allicons/apple-icon-72x72.png">
@@ -84,7 +84,7 @@
         <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
-	
+
 
 </head>
 
@@ -131,26 +131,26 @@
         <!-- Formulare zur änderung der Preferences -->
         <div class="row">
             <div class="col-lg-12">
-                
+
                 <?php
-				
+
 				if($language == "de"){
 					echo '<h2>Deine Einstellungen</h2>';
 				} else {
 					echo '<h2>Your Settings</h2>';
 				}
-							   
-                
+
+
                 $datas = mysqli_query($link, "SELECT * FROM tbl_user WHERE id=$users_id;");
-				
+
 				if (isset($_POST["submit_eingabemaske"]))	// Submit-Schaltfläche der Eingabemaske wurde betätigt
 				{
-					
+
 					// SQL-Kommando: Ändern von Einträgen
 					$sql="
-					UPDATE tbl_user SET 
-					name='$_POST[name]', 
-					goal_weight='$_POST[PreferedWeight]', 
+					UPDATE tbl_user SET
+					name='$_POST[name]',
+					goal_weight='$_POST[PreferedWeight]',
 					goal_date='$_POST[PreferedDate]',
 					height ='$_POST[height]',
 					age ='$_POST[FormAge]',
@@ -177,24 +177,24 @@
 						echo("<br/><br/><div style='text-align: center;' class='alert alert-success'><strong><span class='glyphicon glyphicon-floppy-saved'></span> Changes saved!</strong></div>");
 					}
              }
-				
-				
+
+
                 while ($row = mysqli_fetch_array($datas)){
-					
+
 					if($row['goal_date'] != NULL){
 						$date = DateTime::createFromFormat('Y-m-d', $row['goal_date']);
 						$output = $date->format('Y-m-d');
 					} else {
 						$output = "";
 					}
-					
-									
+
+
 					if(isset($row['current_weight']) && isset($row['height']) && $row['height'] != 0){
 						$bmi = round($row['current_weight'] / (($row['height'] / "100") * ($row['height'] /"100")), 2);
 					} else {
 						$bmi = 0;
 					}
-									
+
 					if($language == "de"){
 						echo '<form method="post" action="change.php">';
 						echo '<table class="table">';
@@ -246,17 +246,17 @@
 						echo '</table>';
 						echo '</form>';
 					}
-									
-					
+
+
                 }
-                
-                
-                
+
+
+
                 ?>
             </div>
         </div>
         <!-- /.row -->
- 
+
 
     </div>
     <!-- /.container -->

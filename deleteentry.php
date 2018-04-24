@@ -2,7 +2,7 @@
 
 session_start();
 session_regenerate_id();
- 
+
 if (empty($_SESSION['login'])) {
 		header('Location: http://' . $_SERVER['HTTP_HOST'] . '/login.php');
 } else {
@@ -13,7 +13,7 @@ if (empty($_SESSION['login'])) {
     $users_id = htmlspecialchars($_SESSION['user']['userid']);
 }
 
-$link = mysqli_connect("localhost", "root", "", "eliareut_weight") or die (mysqli_error ());
+include("database/connect.php");
 
 $id = $_GET['id'];
 

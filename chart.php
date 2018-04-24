@@ -2,10 +2,10 @@
 <html lang="en">
 
 <?php
- 
+
 	session_start();
 	session_regenerate_id();
- 
+
 	if (empty($_SESSION['login'])) {
 		header('Location: http://' . $_SERVER['HTTP_HOST'] . '/login.php');
 	} else {
@@ -14,18 +14,18 @@
 		';
     $name = htmlspecialchars($_SESSION['user']['username']);
     $users_id = htmlspecialchars($_SESSION['user']['userid']);
-	
+
 	date_default_timezone_set('Europe/Berlin');
-    $link = mysqli_connect("localhost", "root", "", "eliareut_weight") or die (mysqli_error ());
-	
+    include("database/connect.php");
+
 	$userlangselect = mysqli_fetch_array(mysqli_query($link, "SELECT user_lang FROM tbl_user WHERE id = '$users_id';"));
 	$language = $userlangselect['user_lang'];
-	
+
 	}
 ?>
 
 <head>
-    
+
     <link rel="apple-touch-icon" sizes="57x57" href="/allicons/apple-icon-57x57.png">
     <link rel="apple-touch-icon" sizes="60x60" href="/allicons/apple-icon-60x60.png">
     <link rel="apple-touch-icon" sizes="72x72" href="/allicons/apple-icon-72x72.png">
@@ -70,20 +70,20 @@
         <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
-	
+
 	<?php
-	
+
 	$sql2 = "SELECT * FROM tbl_weight_data WHERE tbl_user_ID = '$users_id' ORDER BY time DESC;";
 	$alldata = mysqli_query($link, $sql2);
-	
+
 	while($row = mysqli_fetch_array($alldata)) {
-		
-		
-		
+
+
+
 	}
-	
+
 	?>
-	
+
 	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script type="text/javascript">
       google.charts.load('current', {'packages':['corechart']});
@@ -92,27 +92,27 @@
       function drawChart() {
         var data = google.visualization.arrayToDataTable([
 			<?php
-			
+
 			if($language == "de"){
 				echo "['Datum',  'Gewicht'],";
 			} else {
 				echo "['Date',  'Weight'],";
 			}
-	
+
 			$sql2 = "SELECT * FROM tbl_weight_data WHERE tbl_user_ID = '$users_id' ORDER BY time ASC;";
 			$alldata = mysqli_query($link, $sql2);
-			
+
 			while($row = mysqli_fetch_array($alldata)) {
-				
+
 				$date = DateTime::createFromFormat('Y-m-d H:i:s', $row['time']);
 				$output = $date->format('d.m.Y');
-				
-				echo "    ['".$output."', ".$row['weight']."],    ";
-				
-			}
-			
 
-			
+				echo "    ['".$output."', ".$row['weight']."],    ";
+
+			}
+
+
+
 			?>
 
         ]);
@@ -175,19 +175,19 @@
         <div class="row">
             <div class="col-lg-12">
 				<?php
-				
+
 				if($language == "de"){
 					echo '<h2>Diagramme</h2>';
 				} else {
 					echo '<h2>Charts</h2>';
 				}
-				
+
 				?>
                 <div id="curve_chart" style="width: 900px; height: 500px"></div>
             </div>
         </div>
         <!-- /.row -->
- 
+
 
     </div>
     <!-- /.container -->

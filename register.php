@@ -8,7 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="">
-    
+
     <link rel="apple-touch-icon" sizes="57x57" href="/allicons/apple-icon-57x57.png">
     <link rel="apple-touch-icon" sizes="60x60" href="/allicons/apple-icon-60x60.png">
     <link rel="apple-touch-icon" sizes="72x72" href="/allicons/apple-icon-72x72.png">
@@ -62,35 +62,35 @@
     }
 		if (empty($_POST['f']['username']) || empty($_POST['f']['password']) || empty($_POST['f']['password_again'])
 		) {
-			
+
 			$message['error'] = 'Some fields are empty';
-			
+
 		} else if ($_POST['f']['password'] != $_POST['f']['password_again']) {
-			
+
 			$message['error'] = "Passwords don't match";
-			
+
 		} else if (strstr($_POST['f']['username'], " ")){
-			
+
 			$message['error'] = 'Username should not contain spaces.';
-			
+
 		} else {
-			
+
 			unset($_POST['f']['password_again']);
-			$salt = ''; 
-			for ($i = 0; $i < 22; $i++) { 
+			$salt = '';
+			for ($i = 0; $i < 22; $i++) {
 				$salt .= substr('./ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789', mt_rand(0, 63), 1);
 			}
-			
+
 			$_POST['f']['password'] = crypt(
 				$_POST['f']['password'],
 				'$2a$10$' . $salt
 			);
- 
-			$mysqli =  @new mysqli('localhost', 'root', '', 'eliareut_weight');
+
+			include("database/connect.php");
 			if ($mysqli->connect_error) {
 				$message['error'] = 'Database Error: ' . $mysqli->connect_error;
 			}
-			
+
 			$query = sprintf(
 				"INSERT INTO tbl_user (username, password)
 				SELECT * FROM (SELECT '%s', '%s') as new_user
@@ -101,17 +101,17 @@
 				$mysqli->real_escape_string($_POST['f']['password']),
 				$mysqli->real_escape_string($_POST['f']['username'])
 			);
-			
+
 			$mysqli->query($query);
-			
+
 			if ($mysqli->affected_rows == 1) {
-				$message['success'] = 'New User (' . htmlspecialchars($_POST['f']['username']) . ') created, <a href="login.php">Login</a>.';				
+				$message['success'] = 'New User (' . htmlspecialchars($_POST['f']['username']) . ') created, <a href="login.php">Login</a>.';
 			} else {
-				
+
 				$message['error'] = 'Username already in use.';
-				
+
 			}
-			
+
 			$mysqli->close();
 		}
 	} else {
@@ -122,7 +122,7 @@
 
 
 <body id="page-top" data-spy="scroll" data-target=".navbar-fixed-top">
-    
+
     <div class="container" style="margin-top: 30px; margin-bottom: 100px;">
         <div class="row"  style="margin-left: 2%; margin-right: 2%;">
 					<img class="img-responsive center-block" src="images/headersmall.png"/>
@@ -136,7 +136,7 @@
                         <fieldset class="notice"><legend>Register</legend><?php echo $message['notice'] ?></fieldset>
             <?php endif; ?>
             <br/>
-					
+
             <form role="form" action="./register.php" method="post">
 								<div class="col-lg-3"></div>
                 <div class="col-lg-6" id="formular">
@@ -166,7 +166,7 @@
                 </div>
 								<div class="col-lg-3"></div>
             </form>
-            
+
         </div>
     </div>
 </body>

@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-		
+
 		<link rel="apple-touch-icon" sizes="57x57" href="/allicons/apple-icon-57x57.png">
     <link rel="apple-touch-icon" sizes="60x60" href="/allicons/apple-icon-60x60.png">
     <link rel="apple-touch-icon" sizes="72x72" href="/allicons/apple-icon-72x72.png">
@@ -23,7 +23,7 @@
     <meta name="msapplication-TileColor" content="#ffffff">
     <meta name="msapplication-TileImage" content="/allicons/ms-icon-144x144.png">
     <meta name="theme-color" content="#ffffff">
-		
+
     <meta name="description" content="">
     <meta name="author" content="">
     <link rel="icon" href="../../favicon.ico">
@@ -42,14 +42,14 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
   </head>
-	
+
 	<?php
-	
+
 		function redirect($url){
-			if (!headers_sent()){    
+			if (!headers_sent()){
 				header('Location: '.$url);
 				exit;
-			} else {  
+			} else {
 				echo '<script type="text/javascript">';
 				echo 'window.location.href="'.$url.'";';
 				echo '</script>';
@@ -58,10 +58,10 @@
 				echo '</noscript>'; exit;
 			}
 		}
-		
+
 		ini_set('session.cookie_lifetime', 60 * 60 * 24 * 100);
-    ini_set('session.gc_maxlifetime', 60 * 60 * 24 * 100);
-		
+        ini_set('session.gc_maxlifetime', 60 * 60 * 24 * 100);
+
 		session_start();
 		session_regenerate_id();
 
@@ -73,7 +73,7 @@
 	?>
 
   <body>
-    
+
     <?php
 if (isset($_SESSION['login'])) {
 	redirect("index.php");
@@ -85,7 +85,7 @@ if (isset($_SESSION['login'])) {
 		) {
 			$message['error'] = 'Es wurden nicht alle Felder ausgefüllt.';
 		} else {
-			$mysqli = @new mysqli('localhost', 'root', '', 'eliareut_weight');
+			include("database/connect.php");
 			if ($mysqli->connect_error) {
 				$message['error'] = 'Datenbankverbindung fehlgeschlagen: ' . $mysqli->connect_error;
 			} else {
@@ -96,18 +96,18 @@ if (isset($_SESSION['login'])) {
 				$result = $mysqli->query($query);
 				if ($row = $result->fetch_array(MYSQLI_ASSOC)) {
 					if (crypt($_POST['f']['password'], $row['password']) == $row['password']) {
-						
+
 						ini_set('session.cookie_lifetime', 60 * 60 * 24 * 100);
 						ini_set('session.gc_maxlifetime', 60 * 60 * 24 * 100);
-						
+
 						session_start();
- 
+
 						$_SESSION = array(
 							'login' => true,
 							'user'  => array(
 								'username'  => $row['username'],
 								'userid' => $row['ID']
-								
+
 							)
 						);
 						$message['success'] = 'Anmeldung erfolgreich.';
@@ -134,8 +134,8 @@ if (isset($_SESSION['login'])) {
 				<img class="img-responsive center-block" src="images/headersmall.png"/>
 
       <form class="form-signin" action="./login.php" method="post">
-        
-        
+
+
         <?php if (isset($message['error'])): ?>
               <fieldset style="color: red;" class="error"><legend>Fehler</legend><?php echo $message['error'] ?></fieldset>
         <?php endif;

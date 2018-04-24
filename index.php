@@ -4,10 +4,10 @@
 <?php
 
 	function redirect($url){
-		if (!headers_sent()){    
+		if (!headers_sent()){
 			header('Location: '.$url);
 			exit;
-		} else {  
+		} else {
 			echo '<script type="text/javascript">';
 			echo 'window.location.href="'.$url.'";';
 			echo '</script>';
@@ -16,28 +16,28 @@
 			echo '</noscript>'; exit;
 		}
 	}
-	
+
 	session_start();
 	session_regenerate_id();
- 
+
 	if (empty($_SESSION['login'])) {
 		redirect("login.php");
 	} else {
 
     $name = htmlspecialchars($_SESSION['user']['username']);
     $users_id = htmlspecialchars($_SESSION['user']['userid']);
-	
+
 	date_default_timezone_set('Europe/Berlin');
-    $link = mysqli_connect("localhost", "root", "", "eliareut_weight") or die (mysqli_error ());
-	
+	include("database/connect.php");
+
 	$userlangselect = mysqli_fetch_array(mysqli_query($link, "SELECT user_lang FROM tbl_user WHERE id = '$users_id';"));
 	$language = $userlangselect['user_lang'];
-	
+
 	}
 ?>
 
 <head>
-    
+
     <link rel="apple-touch-icon" sizes="57x57" href="/allicons/apple-icon-57x57.png">
     <link rel="apple-touch-icon" sizes="60x60" href="/allicons/apple-icon-60x60.png">
     <link rel="apple-touch-icon" sizes="72x72" href="/allicons/apple-icon-72x72.png">
@@ -74,7 +74,7 @@
         /* Required padding for .navbar-fixed-top. Remove if using .navbar-static-top. Change if height of navigation changes. */
     }
     </style>
-	
+
     <link href="css/ownStyle.css" rel="stylesheet">
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -129,15 +129,15 @@
         <!-- Formular zur Übermittlung neuer Werte -->
         <div class="row">
             <div class="col-lg-12">
-                
+
                 <form role="form" action="index.php" method="post" >
                         <?php
-                        
+
                             $rowGoal = mysqli_fetch_array(mysqli_query($link, "SELECT goal_weight, current_weight FROM tbl_user WHERE id = '$users_id';"));
                             $differencetogoal = $rowGoal['current_weight'] - $rowGoal['goal_weight'];
                             $goal_weightForm = $rowGoal['goal_weight'];
-                        
-							
+
+
                             if (isset($_GET['state']) && $_GET['state'] == 'success'){
 								if($language == "de"){
 									echo '<div class="alert alert-success" style="text-align: center;"><strong><span class="glyphicon glyphicon-ok"></span> Eintrag gespeichert! <a href="index.php">Weitere hinzufügen</a></strong></div>';
@@ -151,25 +151,25 @@
 									echo '<div class="alert alert-info" style="text-align: center;"><strong><span class="glyphicon glyphicon-trash"></span> Success! Entry Deleted. <a href="index.php">Add a new One</a></strong></div>';
 								}
                             } else {
-                                
+
 								if($language == "de"){
 									echo '<h2>Neuen Eintrag erfassen</h2>';
 								} else {
 									echo '<h2>Add new Entry</h2>';
 								}
-								
+
 								$date = "";
 								$weight = "";
-								
+
 								if(isset($_POST["InputDate"])){
 									$date = $_POST["InputDate"];
 								}
 								if(isset($_POST["InputWeight"])){
 									$weight = $_POST["InputWeight"];
 								}
-                                
+
                                 $now = date('Y-m-d H:i:s');
-                                
+
                                 $sql = "INSERT INTO tbl_weight_data (time, weight, tbl_user_ID) VALUES ('$date', '$weight', '$users_id');";
                                 $othersql = "UPDATE tbl_user SET current_weight='$weight' WHERE id='$users_id';";
 
@@ -185,12 +185,12 @@
 											}
                                         }else{
 											echo '<div class="alert alert-danger" style="text-align: center;"><span class="glyphicon glyphicon-alert"></span><strong> Error!</strong></div>';
-                                        } 
+                                        }
                                 } else {
-										
+
 									if($language == "de"){
 										echo '
-                                        
+
                                         <div class="col-lg-6" style="float: none !important; margin-left: auto !important; margin-right: auto !important;">
                                         <div class="form-group">
                                           <label for="InputDate">Datum & Zeit</label>
@@ -206,11 +206,11 @@
                                         </div>
                                         <input type="submit" name="submit" id="submit" value="Speichern" class="btn btn-info pull-right">
                                       </div>
-                                        
+
                                         ';
 									} else {
 										echo '
-                                        
+
                                         <div class="col-lg-6" style="float: none !important; margin-left: auto !important; margin-right: auto !important;">
                                         <div class="form-group">
                                           <label for="InputDate">Date & Time</label>
@@ -226,46 +226,46 @@
                                         </div>
                                         <input type="submit" name="submit" id="submit" value="Submit" class="btn btn-info pull-right">
                                       </div>
-                                        
+
                                         ';
 									}
-										
-                                        
+
+
                                 }
                             }
-                                
-                        
+
+
                         ?>
-                
+
               </form>
             </div>
         </div>
         <!-- /.row -->
-      
-        
-        
+
+
+
         <!-- Auflistung aller Werte -->
         <div class="row">
             <div class="col-lg-12 ">
-						
-                    
+
+
                         <?php
-						
+
 							if($language == "de"){
 								echo '<h2>Alle Einträge</h2>';
 							} else {
 								echo '<h2>All Entries</h2>';
 							}
-                            
+
                             $sql2 = "SELECT * FROM tbl_weight_data WHERE tbl_user_ID = '$users_id' ORDER BY time DESC;";
 							$sql2_3 = $sql2;
                             $alldata = mysqli_query($link, $sql2);
 							$countTheData = mysqli_query($link, $sql2_3);
-                            $i = "1";     
+                            $i = "1";
                             $difference = "0";
                             $biggest_weight = "0";
                             $lowest_weight = "200";
-                      
+
 							if($language == "de"){
 								echo '  <div class="table-responsive"><table class="table">
                                     <thead>
@@ -290,19 +290,19 @@
                                     <tbody>';
 							}
 
-                            
-									
+
+
 									$thecountid = "0";
-								
+
 									while($rowxyz = mysqli_fetch_array($countTheData)) {
 										$thecountid = $thecountid + "1";
 									}
-              
+
                                     while($row = mysqli_fetch_array($alldata)) {
-										
+
 										$date = DateTime::createFromFormat('Y-m-d H:i:s', $row['time']);
 										$output = $date->format('d.m.Y | H:i');
-										
+
                                         echo '<tr><td>'.$thecountid.'</td><td>'.$output.'</td><td>'.$row['weight'].' Kg</td><td><a href="deleteentry.php?id='.$row['ID'].'"><span class="glyphicon glyphicon-trash"></span></a></td></tr>';
                                         if ($i == "1"){
                                           $difference = $row['weight'];
@@ -313,11 +313,11 @@
                                         $i = $i + "1";
                                         $thecountid = $thecountid - "1";
                                         $newest_weight = $row['weight'];
-                                          
+
                                     }
-                                    
-                                    
-                            
+
+
+
                             echo '  </tbody>
                                     </table></div>';
                             if (isset($oldest_weight) && isset($newest_weight)){
@@ -325,13 +325,13 @@
 							} else {
 								$bigdifference = "";
 							}
-                            
-                           
+
+
                         ?>
             </div>
         </div>
         <!-- /.row -->
-      
+
         <div class="row">
             <div class="col-lg-12">
 				<?php
@@ -341,7 +341,7 @@
 					echo '<h2>Facts</h2>';
 				}
 				?>
-                
+
                 <div class="col-lg-3 well factdivs">
 					<?php
 					if($language == "de"){
@@ -351,19 +351,19 @@
 					}
 
                         if ($difference < 0){
-                                   echo "<h3 style='color: green;'>".round($difference, 4)." Kg</h3>"; 
+                                   echo "<h3 style='color: green;'>".round($difference, 4)." Kg</h3>";
                                 } else if ($difference > 0){
-                                   echo "<h3 style='color: red;'> +".round($difference, 4)." Kg</h3>"; 
+                                   echo "<h3 style='color: red;'> +".round($difference, 4)." Kg</h3>";
                                 } else {
-                                   echo "<h3 style='color: grey;'>".round($difference, 4)." Kg</h3>"; 
+                                   echo "<h3 style='color: grey;'>".round($difference, 4)." Kg</h3>";
                                 }
 
                     ?>
                 </div>
                 <div class="col-lg-3 well factdivs">
-                    
+
                     <?php
-					
+
 						if($language == "de"){
 							echo '<p>Unterschied zwischen letztem und ersten Eintrag:</p>';
 						} else {
@@ -371,16 +371,16 @@
 						}
 
                         if ($bigdifference > 0){
-                            echo "<h3 style='color: red;'> +".round($bigdifference, 2)." Kg</h3>"; 
+                            echo "<h3 style='color: red;'> +".round($bigdifference, 2)." Kg</h3>";
                         } else if ($bigdifference < 0){
-                            echo "<h3 style='color: green;'>".round($bigdifference, 2)." Kg</h3>"; 
+                            echo "<h3 style='color: green;'>".round($bigdifference, 2)." Kg</h3>";
                         } else {
-                            echo "<h3 style='color: grey;'>".round($bigdifference, 2)." Kg</h3>"; 
+                            echo "<h3 style='color: grey;'>".round($bigdifference, 2)." Kg</h3>";
                         }
 
                     ?>
                 </div>
-              
+
                 <div class="col-lg-3 well factdivs">
 					<?php
 					if($language == "de"){
@@ -388,7 +388,7 @@
 					} else {
 						echo '<p>Difference between current Weight and Goal:</p>';
 					}
-					
+
                         if($differencetogoal >= "10" || $differencetogoal <= "-10"){
                           echo "<h3 style='color: red;'>". round($differencetogoal, 2) ." Kg </h3>";
                         } else if ($differencetogoal < "10" && $differencetogoal > "5" || $differencetogoal > "-10" && $differencetogoal < "-5"){
@@ -396,12 +396,12 @@
                         } else if ($differencetogoal < "5" || $differencetogoal > "-5"){
                           echo "<h3 style='color: green;'>". round($differencetogoal, 2) ." Kg </h3>";
                         } else {
-                          
+
                         }
 
                     ?>
                 </div>
-							
+
 				<div class="col-lg-3 well factdivs">
 					<?php
 					if($language == "de"){
@@ -409,10 +409,10 @@
 					} else {
 						echo '<p>Your BMI:</p>';
 					}
-                    
-                        
+
+
                         $datas = mysqli_query($link, "SELECT current_weight, height, age FROM tbl_user WHERE id=$users_id;");
-									 
+
 									 			while ($row = mysqli_fetch_array($datas)){
 													if(isset($row['current_weight']) && isset($row['height']) && $row['height'] != 0){
 														$bmi = round($row['current_weight'] / (($row['height'] / "100") * ($row['height'] /"100")), 2);
@@ -424,9 +424,9 @@
 													} else {
 														$age = 0;
 													}
-													
+
 												}
-									 
+
 									 			if($age <= 24 && $age > 10){
 													if($bmi < 19){
 														echo "<h3 style='color:red;'>".$bmi."</h3>";
@@ -513,38 +513,38 @@
 														echo "<a href='change.php'>Add</a> your Age for exact BMI";
 													}
 												}
-									 
-									 			
-									 			
-									 			
+
+
+
+
 
                     ?>
                 </div>
-							
+
 								<div class="col-lg-3 well factdivs">
 										<?php
-										
+
 										if($language == "de"){
 											echo "<p>Tage bis zum Ziel-Datum:</p>";
 										} else {
 											echo "<p>Days left to Goal Date:</p>";
 										}
-										
+
 										$datas = mysqli_query($link, "SELECT goal_date, current_weight, goal_weight FROM tbl_user WHERE id=$users_id;");
-									
+
 										while ($row = mysqli_fetch_array($datas)){
 												$goal_date = $row['goal_date'];
 												$now = date("Y-m-d");
 												$weightleft = $row['current_weight'] - $row['goal_weight'];
 										}
-									
-									
+
+
 										$now = time(); // or your date as well
 										$your_date = strtotime("$goal_date");
 										$datediff = $your_date - $now;
-										
+
 										$daysleft = floor($datediff / (60 * 60 * 24));
-										
+
 										if($language == "de"){
 											if($daysleft > 28){
 												echo "<h3 style='color:green;'>". $daysleft ." Tage</h3>";
@@ -562,23 +562,23 @@
 												echo "<h3 style='color:red;'>". $daysleft ." Days</h3>";
 											}
 										}
-										
-										
+
+
 										?>
 								</div>
-							
+
 								<div class="col-lg-3 well factdivs">
-                    
+
 										<?php
-										
+
 										if($language == "de"){
 											echo "<p>Täglich nötiger Verlust um Ziel-Gewicht auf Ziel-Datum zu erreichen:</p>";
 										} else {
 											echo "<p>Daily loss needed to achive Weight Goal until Date Goal:</p>";
 										}
-									
+
 										$lossneeded = round($weightleft/$daysleft,4);
-									
+
 										if($lossneeded >0.30){
 											echo "<h3 style='color:red;'>". $lossneeded ." Kg</h3>";
 										} if($lossneeded <= 0.3 && $lossneeded > 0.14){
@@ -588,17 +588,17 @@
 										}
 										?>
 								</div>
-							
+
 								<div class="col-lg-3 well factdivs">
-										
+
 										<?php
-											
+
 											if($language == "de"){
 												echo "<p>Täglich mögliche Einnahme anhand Durchschnittsverbrauch (2400):</p>	";
 											} else {
 												echo "<p>Daily possible Calories intake based on averge consumption (2400):</p>	";
 											}
-									
+
 											$onekilo = "7300";
 											$lossneededkilo = ($onekilo)*($lossneeded);
 
@@ -617,12 +617,12 @@
 												echo "<h3 style='color:green;'>". $endresult ." Calories</h3>";
 											}
 											}
-											
-											
-									
+
+
+
 										?>
 								</div>
-            </div>  
+            </div>
         </div>
 
     </div>
